@@ -38,7 +38,7 @@ const psychology = (() => {
   async function _loadSuggestions() {
     if (_cachedSuggestions) return _cachedSuggestions;
     try {
-      const response = await fetch('/assets/data/suggestions.json');
+      const response = await fetch('./assets/data/suggestions.json');
       const data     = await response.json();
       _cachedSuggestions = data.suggestions || [];
       return _cachedSuggestions;

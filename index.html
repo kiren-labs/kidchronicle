@@ -134,12 +134,7 @@
     new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
 
   document.getElementById('log-entry-back').addEventListener('click', () => {
-    history.back();
-    setTimeout(() => {
-      if (document.getElementById('screen-log-entry').classList.contains('active')) {
-        document.querySelector('.nav-item[data-screen="home"]').click();
-      }
-    }, 100);
+    document.querySelector('.nav-item[data-screen="home"]').click();
   });
 </script>
 

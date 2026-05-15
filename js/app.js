@@ -121,11 +121,15 @@
           <div class="onboard-dot"></div>
         </div>`;
 
-      document.getElementById('onboard-next-1').addEventListener('click', () => {
+      const _next1 = () => {
         const name = document.getElementById('family-name-input').value.trim();
         if (!name) { showToast('Please enter your family name.', 'error'); return; }
         _onboardFamily.name = name;
         renderOnboardStep(2);
+      };
+      document.getElementById('onboard-next-1').addEventListener('click', _next1);
+      document.getElementById('family-name-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') _next1();
       });
     }
 
@@ -149,7 +153,7 @@
 
       _wireColourPicker(colour => { _onboardChild.avatarColor = colour; });
 
-      document.getElementById('onboard-next-2').addEventListener('click', () => {
+      const _next2 = () => {
         const name = document.getElementById('child-name-input').value.trim();
         const dob  = document.getElementById('child-dob-input').value;
         if (!name) { showToast("Please enter your child's name.", 'error'); return; }
@@ -157,6 +161,10 @@
         _onboardChild.name        = name;
         _onboardChild.dateOfBirth = dob;
         renderOnboardStep(3);
+      };
+      document.getElementById('onboard-next-2').addEventListener('click', _next2);
+      document.getElementById('child-name-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') _next2();
       });
     }
 
