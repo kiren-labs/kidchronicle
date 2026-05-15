@@ -976,13 +976,23 @@
     }
 
     listEl.innerHTML = items.slice(0, 50).map(item =>
-      item._type === 'reflection' ? _buildReflectionCard(item) : _buildEntryCard(item, item._child)
+      item._type === 'reflection'
+        ? _buildReflectionCard(item, { editable: true })
+        : _buildEntryCard(item, item._child, { editable: true })
     ).join('');
+
+    // ── Action button wiring ───────────────────────────────────────────────
+    listEl.addEventListener('click', e => {
+      const entryBtn      = e.target.closest('[data-action-entry]');
+      const reflectionBtn = e.target.closest('[data-action-reflection]');
+      if (entryBtn)      _showEntryActions(parseInt(entryBtn.dataset.actionEntry, 10), items);
+      if (reflectionBtn) _showReflectionActions(parseInt(reflectionBtn.dataset.actionReflection, 10), items);
+    });
   }
 
   // ── Card builders ──────────────────────────────────────────────────────────
 
-  function _buildEntryCard(entry, child) {
+  function _buildEntryCard(entry, child, { editable = false } = {}) {
     const colour = child ? child.avatarColor : 'purple';
     const name   = child ? (child.nickname || child.name) : 'Unknown';
     return `
@@ -993,15 +1003,20 @@
             <span class="entry-card__name">${_esc(name)}</span>
           </div>
           <span class="entry-card__date">${_formatDate(entry.date)}</span>
+          ${editable ? `
+          <button class="entry-card__action" data-action-entry="${entry.id}"
+                  aria-label="Edit or delete this entry">
+            <i class="ti ti-dots" aria-hidden="true"></i>
+          </button>` : ''}
         </div>
         <div class="entry-card__text">${_esc(entry.text)}</div>
         <div class="entry-card__footer">
-          <span class="mood-chip">${entry.moodTag}</span>
+          <span class="mood-chip">${_esc(entry.moodTag)}</span>
         </div>
       </div>`;
   }
 
-  function _buildReflectionCard(entry) {
+  function _buildReflectionCard(entry, { editable = false } = {}) {
     return `
       <div class="entry-card">
         <div class="entry-card__header">
@@ -1010,12 +1025,260 @@
             <span class="entry-card__name" style="color:var(--color-muted)">My reflection</span>
           </div>
           <span class="entry-card__date">${_formatDate(entry.date)}</span>
+          ${editable ? `
+          <button class="entry-card__action" data-action-reflection="${entry.id}"
+                  aria-label="Edit or delete this reflection">
+            <i class="ti ti-dots" aria-hidden="true"></i>
+          </button>` : ''}
         </div>
         <div class="entry-card__text">${_esc(entry.text)}</div>
         <div class="entry-card__footer">
-          <span class="mood-chip">${entry.moodTag}</span>
+          <span class="mood-chip">${_esc(entry.moodTag)}</span>
         </div>
       </div>`;
+  }
+
+  // ── Action sheet ───────────────────────────────────────────────────────────
+
+  function showActionSheet(title, actions) {
+    document.getElementById('action-sheet-overlay')?.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'action-sheet-overlay';
+    overlay.className = 'action-sheet-overlay';
+    overlay.innerHTML = `
+      <div class="action-sheet" role="dialog" aria-modal="true" aria-label="${_esc(title)}">
+        <div class="action-sheet__title">${_esc(title)}</div>
+        ${actions.map((a, i) => `
+          <button class="action-sheet__btn ${a.danger ? 'action-sheet__btn--danger' : ''}"
+                  data-action-index="${i}">
+            <i class="ti ${a.icon}" aria-hidden="true"></i> ${_esc(a.label)}
+          </button>`).join('')}
+        <button class="action-sheet__btn" data-action-cancel>
+          <i class="ti ti-x" aria-hidden="true"></i> Cancel
+        </button>
+      </div>`;
+
+    document.body.appendChild(overlay);
+
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay || e.target.closest('[data-action-cancel]')) {
+        overlay.remove();
+        return;
+      }
+      const btn = e.target.closest('[data-action-index]');
+      if (!btn) return;
+      overlay.remove();
+      actions[parseInt(btn.dataset.actionIndex, 10)].handler();
+    });
+  }
+
+  // ── Entry actions (history) ─────────────────────────────────────────────────
+
+  function _showEntryActions(entryId, items) {
+    const entry = items.find(i => i.id === entryId);
+    if (!entry) return;
+
+    showActionSheet('Log entry', [
+      {
+        label: 'Edit entry',
+        icon:  'ti-pencil',
+        handler: () => _showEditEntry(entry),
+      },
+      {
+        label:   'Delete entry',
+        icon:    'ti-trash',
+        danger:  true,
+        handler: () => showConfirm(
+          'Delete this entry?',
+          'This log entry will be permanently removed.',
+          'Delete',
+          async () => {
+            const result = await logbook.deleteEntry(entryId);
+            if (result.success) {
+              showToast('Entry deleted.', 'success');
+              renderHistory();
+            } else {
+              showToast('Could not delete — please try again.', 'error');
+            }
+          }
+        ),
+      },
+    ]);
+  }
+
+  function _showReflectionActions(reflectionId, items) {
+    const entry = items.find(i => i.id === reflectionId);
+    if (!entry) return;
+
+    showActionSheet('My reflection', [
+      {
+        label: 'Edit reflection',
+        icon:  'ti-pencil',
+        handler: () => _showEditReflection(entry),
+      },
+      {
+        label:   'Delete reflection',
+        icon:    'ti-trash',
+        danger:  true,
+        handler: () => showConfirm(
+          'Delete this reflection?',
+          'This reflection will be permanently removed.',
+          'Delete',
+          async () => {
+            const result = await reflection.deleteReflection(reflectionId);
+            if (result.success) {
+              showToast('Reflection deleted.', 'success');
+              renderHistory();
+            } else {
+              showToast('Could not delete — please try again.', 'error');
+            }
+          }
+        ),
+      },
+    ]);
+  }
+
+  // ── Edit entry sheet ────────────────────────────────────────────────────────
+
+  function _showEditEntry(entry) {
+    document.getElementById('edit-sheet-overlay')?.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'edit-sheet-overlay';
+    overlay.className = 'action-sheet-overlay';
+    overlay.style.alignItems = 'flex-end';
+    overlay.innerHTML = `
+      <div class="edit-sheet" role="dialog" aria-modal="true" aria-label="Edit log entry">
+        <div class="edit-sheet__header">
+          <span class="edit-sheet__title">Edit entry</span>
+          <button id="edit-sheet-close" class="btn-back" aria-label="Close">
+            <i class="ti ti-x" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="form-section" style="padding-top:14px">
+          <div class="form-label">What happened</div>
+          <textarea class="input-field" id="edit-entry-text" rows="4">${_esc(entry.text)}</textarea>
+        </div>
+        <div class="form-section">
+          <div class="form-label">Mood</div>
+          <div class="chip-scroll" id="edit-mood-chips">
+            ${_renderMoodChips(logbook.MOOD_TAGS, entry.moodTag)}
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-label">Date</div>
+          <input class="input-field" id="edit-entry-date" type="date"
+            value="${_esc(entry.date)}"
+            max="${new Date().toISOString().split('T')[0]}" />
+        </div>
+        <div class="form-section">
+          <button class="btn-primary" id="edit-entry-save">Save changes</button>
+        </div>
+      </div>`;
+
+    document.body.appendChild(overlay);
+
+    let selectedMood = entry.moodTag;
+
+    document.getElementById('edit-mood-chips').addEventListener('click', e => {
+      const btn = e.target.closest('[data-mood]');
+      if (!btn) return;
+      selectedMood = btn.dataset.mood;
+      document.querySelectorAll('#edit-mood-chips .chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.mood === selectedMood);
+        c.setAttribute('aria-pressed', c.dataset.mood === selectedMood);
+      });
+    });
+
+    document.getElementById('edit-sheet-close').addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+    document.getElementById('edit-entry-save').addEventListener('click', async () => {
+      const text = document.getElementById('edit-entry-text').value.trim();
+      const date = document.getElementById('edit-entry-date').value;
+      if (!text) { showToast('Entry text cannot be empty.', 'error'); return; }
+
+      const result = await logbook.editEntry(entry.id, { text, moodTag: selectedMood, date });
+      if (result.success) {
+        overlay.remove();
+        showToast('Entry updated.', 'success');
+        renderHistory();
+      } else {
+        showToast('Could not save — please try again.', 'error');
+      }
+    });
+  }
+
+  // ── Edit reflection sheet ───────────────────────────────────────────────────
+
+  function _showEditReflection(entry) {
+    document.getElementById('edit-sheet-overlay')?.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'edit-sheet-overlay';
+    overlay.className = 'action-sheet-overlay';
+    overlay.style.alignItems = 'flex-end';
+    overlay.innerHTML = `
+      <div class="edit-sheet" role="dialog" aria-modal="true" aria-label="Edit reflection">
+        <div class="edit-sheet__header">
+          <span class="edit-sheet__title">Edit reflection</span>
+          <button id="edit-sheet-close" class="btn-back" aria-label="Close">
+            <i class="ti ti-x" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="form-section" style="padding-top:14px">
+          <div class="form-label">Your reflection</div>
+          <textarea class="input-field" id="edit-reflection-text" rows="4">${_esc(entry.text)}</textarea>
+        </div>
+        <div class="form-section">
+          <div class="form-label">How were you?</div>
+          <div class="chip-scroll" id="edit-parent-mood-chips">
+            ${_renderMoodChips(reflection.PARENT_MOOD_TAGS, entry.moodTag)}
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-label">Date</div>
+          <input class="input-field" id="edit-reflection-date" type="date"
+            value="${_esc(entry.date)}"
+            max="${new Date().toISOString().split('T')[0]}" />
+        </div>
+        <div class="form-section">
+          <button class="btn-primary" id="edit-reflection-save">Save changes</button>
+        </div>
+      </div>`;
+
+    document.body.appendChild(overlay);
+
+    let selectedMood = entry.moodTag;
+
+    document.getElementById('edit-parent-mood-chips').addEventListener('click', e => {
+      const btn = e.target.closest('[data-mood]');
+      if (!btn) return;
+      selectedMood = btn.dataset.mood;
+      document.querySelectorAll('#edit-parent-mood-chips .chip').forEach(c => {
+        c.classList.toggle('active', c.dataset.mood === selectedMood);
+        c.setAttribute('aria-pressed', c.dataset.mood === selectedMood);
+      });
+    });
+
+    document.getElementById('edit-sheet-close').addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+
+    document.getElementById('edit-reflection-save').addEventListener('click', async () => {
+      const text = document.getElementById('edit-reflection-text').value.trim();
+      const date = document.getElementById('edit-reflection-date').value;
+      if (!text) { showToast('Reflection cannot be empty.', 'error'); return; }
+
+      const result = await reflection.editReflection(entry.id, { text, moodTag: selectedMood, date });
+      if (result.success) {
+        overlay.remove();
+        showToast('Reflection updated.', 'success');
+        renderHistory();
+      } else {
+        showToast('Could not save — please try again.', 'error');
+      }
+    });
   }
 
   // ── Confirm dialog ─────────────────────────────────────────────────────────
