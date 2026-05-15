@@ -39,6 +39,7 @@
     profile:      document.getElementById('screen-profile'),
     history:      document.getElementById('screen-history'),
     childForm:    document.getElementById('screen-child-form'),
+    settings:     document.getElementById('screen-settings'),
   };
 
   const fab = document.getElementById('fab');
@@ -56,7 +57,7 @@
     _currentScreen = screenId;
 
     // FAB visibility — shown on Home and History only
-    const fabScreens = ['home', 'history'];
+    const fabScreens = ['home', 'history', 'profile'];
     fab.classList.toggle('hidden', !fabScreens.includes(screenId));
 
     // Nav highlighting
@@ -70,6 +71,7 @@
     if (screenId === 'history')                           renderHistory();
     if (screenId === 'logEntry')                          renderLogEntry(options);
     if (screenId === 'childForm')                         renderChildForm(options);
+    if (screenId === 'settings')                          renderSettings();
   }
 
   // ── First launch detection ─────────────────────────────────────────────────
@@ -701,6 +703,200 @@
     } else {
       showToast('Could not save — please try again.', 'error');
     }
+  }
+
+  // ── Settings screen ────────────────────────────────────────────────────────
+
+  function renderSettings() {
+    const settings     = profiles.getSettings();
+    const categories   = settings.pointCategories || [];
+    const lastExport   = settings.lastExportDate
+      ? new Date(settings.lastExportDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+      : 'Never';
+
+    const el = document.getElementById('settings-content');
+    el.innerHTML = `
+
+      <!-- ── Data ── -->
+      <div class="settings-group">
+        <div class="settings-group__label">Your data</div>
+
+        <div class="settings-row" id="settings-export-row" role="button" tabindex="0"
+             aria-label="Export all data">
+          <div>
+            <div class="settings-row__label">Export data</div>
+            <div class="settings-row__meta">Last exported: ${_esc(lastExport)}</div>
+          </div>
+          <div class="settings-row__right">
+            <i class="ti ti-download" aria-hidden="true"></i>
+          </div>
+        </div>
+
+        <div class="settings-row" id="settings-import-row" role="button" tabindex="0"
+             aria-label="Import data from file">
+          <div>
+            <div class="settings-row__label">Import data</div>
+            <div class="settings-row__meta">Merge from a KidChronicle export file</div>
+          </div>
+          <div class="settings-row__right">
+            <i class="ti ti-upload" aria-hidden="true"></i>
+          </div>
+        </div>
+        <input type="file" id="import-file-input" accept=".json" style="display:none"
+               aria-label="Choose import file" />
+      </div>
+
+      <!-- ── Point categories ── -->
+      <div class="settings-group">
+        <div class="settings-group__label">Point categories</div>
+        <div style="background:white;border:0.5px solid var(--color-border);border-radius:var(--radius-md);padding:8px 14px" id="category-list">
+          ${_buildCategoryRows(categories)}
+        </div>
+        <div style="margin-top:10px" id="add-category-form">
+          ${_buildAddCategoryForm()}
+        </div>
+      </div>
+
+      <!-- ── About ── -->
+      <div class="settings-group">
+        <div class="settings-group__label">About</div>
+        <div class="settings-row">
+          <div class="settings-row__label">Version</div>
+          <div class="settings-row__right">v0.1.0</div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row__label">Data storage</div>
+          <div class="settings-row__right" style="font-size:11px">On this device only</div>
+        </div>
+      </div>
+
+      <!-- ── Danger zone ── -->
+      <div class="settings-group">
+        <div class="settings-group__label">Danger zone</div>
+        <div class="settings-row settings-row--danger" id="settings-reset-row"
+             role="button" tabindex="0" aria-label="Reset all data">
+          <div class="settings-row__label">Reset all data</div>
+          <div class="settings-row__right">
+            <i class="ti ti-trash" aria-hidden="true"></i>
+          </div>
+        </div>
+      </div>
+
+      <div style="height:8px"></div>`;
+
+    // ── Export ──
+    document.getElementById('settings-export-row').addEventListener('click', async () => {
+      const result = await exportData.exportAll();
+      showToast(result.success ? 'Data exported successfully.' : (result.error || 'Export failed.'),
+                result.success ? 'success' : 'error');
+      if (result.success) renderSettings(); // refresh last-export date
+    });
+
+    // ── Import ──
+    document.getElementById('settings-import-row').addEventListener('click', () => {
+      document.getElementById('import-file-input').click();
+    });
+
+    document.getElementById('import-file-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const result = await exportData.importAll(file);
+      if (result.success) {
+        const s = result.summary;
+        showToast(
+          `Imported: ${s.logEntries} log entries, ${s.pointsEvents} points events, ${s.parentReflections} reflections.`,
+          'success', 4000
+        );
+      } else {
+        showToast(result.error || 'Import failed.', 'error', 4000);
+      }
+      e.target.value = ''; // reset so same file can be re-selected
+    });
+
+    // ── Category list (delete) ──
+    document.getElementById('category-list').addEventListener('click', e => {
+      const btn = e.target.closest('[data-delete-cat]');
+      if (!btn) return;
+      const catId = btn.dataset.deleteCat;
+      const cats  = profiles.getSettings().pointCategories || [];
+      if (cats.length <= 1) { showToast('You need at least one point category.', 'error'); return; }
+      const updated = cats.filter(c => c.id !== catId);
+      profiles.saveSettings({ pointCategories: updated });
+      document.getElementById('category-list').innerHTML = _buildCategoryRows(updated);
+      _rewireCategoryDelete();
+    });
+
+    // ── Add category form ──
+    document.getElementById('add-category-form').addEventListener('click', e => {
+      if (!e.target.matches('#add-cat-btn')) return;
+      const labelEl = document.getElementById('new-cat-label');
+      const ptsEl   = document.getElementById('new-cat-pts');
+      const label   = labelEl.value.trim();
+      const pts     = parseInt(ptsEl.value, 10);
+
+      if (!label)            { showToast('Please enter a category name.', 'error'); return; }
+      if (!pts || pts <= 0)  { showToast('Points must be a positive number.', 'error'); return; }
+
+      const cats    = profiles.getSettings().pointCategories || [];
+      const newCat  = { id: `cat_${Date.now()}`, label, defaultPoints: pts };
+      const updated = [...cats, newCat];
+      profiles.saveSettings({ pointCategories: updated });
+
+      labelEl.value = '';
+      ptsEl.value   = '5';
+      document.getElementById('category-list').innerHTML = _buildCategoryRows(updated);
+    });
+
+    // ── Reset all data ──
+    document.getElementById('settings-reset-row').addEventListener('click', () => {
+      showConfirm(
+        'Reset all data?',
+        'This will permanently delete all children, log entries, points, and reflections. This cannot be undone.',
+        'Reset everything',
+        async () => {
+          await storage.clearStore(storage.STORES.LOG_ENTRIES);
+          await storage.clearStore(storage.STORES.POINTS_EVENTS);
+          await storage.clearStore(storage.STORES.PARENT_REFLECTIONS);
+          storage.removeLocal(storage.KEYS.FAMILY);
+          storage.removeLocal(storage.KEYS.CHILDREN);
+          storage.removeLocal(storage.KEYS.SETTINGS);
+          showToast('All data deleted. Reloading…', 'success', 2000);
+          setTimeout(() => location.reload(), 2000);
+        }
+      );
+    });
+  }
+
+  function _buildCategoryRows(categories) {
+    if (!categories.length) return '<p style="font-size:13px;color:var(--color-muted);padding:8px 0">No categories yet.</p>';
+    return categories.map(cat => `
+      <div class="category-row">
+        <span class="category-row__label">${_esc(cat.label)}</span>
+        <span class="category-row__pts">${cat.defaultPoints} pts</span>
+        <button class="category-row__delete" data-delete-cat="${_esc(cat.id)}"
+                aria-label="Delete ${_esc(cat.label)} category">
+          <i class="ti ti-x" aria-hidden="true"></i>
+        </button>
+      </div>`).join('');
+  }
+
+  function _buildAddCategoryForm() {
+    return `
+      <div style="background:white;border:0.5px solid var(--color-border);border-radius:var(--radius-md);padding:12px 14px">
+        <div class="form-label" style="padding:0;margin-bottom:8px">Add category</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input class="input-field" id="new-cat-label" type="text"
+            placeholder="e.g. Read a book" style="flex:1" />
+          <input class="input-field" id="new-cat-pts" type="number"
+            value="5" min="1" max="100" style="width:64px;text-align:center" aria-label="Points value" />
+        </div>
+        <button class="btn-primary" id="add-cat-btn">Add category</button>
+      </div>`;
+  }
+
+  function _rewireCategoryDelete() {
+    // Called after a delete re-renders the list — event delegation handles this
+    // automatically via the parent listener, so this is a no-op kept for clarity.
   }
 
   // ── History screen ─────────────────────────────────────────────────────────
