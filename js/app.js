@@ -108,7 +108,7 @@
         </div>
         <div class="onboard-step">
           <p style="font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--color-muted);margin-bottom:6px">Step 1 of 3</p>
-          <p class="display" style="font-size:20px;margin-bottom:16px">What's your family name?</p>
+          <label class="display" style="font-size:20px;margin-bottom:16px;display:block" for="family-name-input">What's your family name?</label>
           <input class="input-field" id="family-name-input" type="text"
             placeholder="e.g. The Johnsons" autocapitalize="words" autocomplete="off"
             value="${_onboardFamily.name || ''}" />
@@ -287,26 +287,26 @@
     const selectedColour = child.avatarColor || 'purple';
     return `
       <div class="form-section">
-        <div class="form-label">Name *</div>
+        <label class="form-label" for="child-name-input">Name *</label>
         <input class="input-field" id="child-name-input" type="text"
           placeholder="e.g. Layla" autocapitalize="words"
           value="${_esc(child.name || '')}" />
       </div>
       <div class="form-section">
-        <div class="form-label">Nickname (optional)</div>
+        <label class="form-label" for="child-nick-input">Nickname (optional)</label>
         <input class="input-field" id="child-nick-input" type="text"
           placeholder="e.g. Lay-Lay"
           value="${_esc(child.nickname || '')}" />
       </div>
       <div class="form-section">
-        <div class="form-label">Date of birth *</div>
+        <label class="form-label" for="child-dob-input">Date of birth *</label>
         <input class="input-field" id="child-dob-input" type="date"
           max="${new Date().toISOString().split('T')[0]}"
           value="${_esc(child.dateOfBirth || '')}" />
       </div>
       <div class="form-section">
-        <div class="form-label">Profile colour</div>
-        <div class="colour-picker">
+        <div class="form-label" id="colour-picker-label">Profile colour</div>
+        <div class="colour-picker" role="group" aria-labelledby="colour-picker-label">
           ${colours.map(c => `
             <div class="colour-swatch avatar-${c} ${selectedColour === c ? 'selected' : ''}"
                  data-colour="${c}" aria-label="${c} colour" role="button" tabindex="0"
@@ -315,7 +315,7 @@
         </div>
       </div>
       <div class="form-section">
-        <div class="form-label">Notes (optional)</div>
+        <label class="form-label" for="child-note-input">Notes (optional)</label>
         <textarea class="input-field" id="child-note-input" rows="2"
           placeholder="Allergies, school, anything useful…">${_esc(child.note || '')}</textarea>
       </div>`;
@@ -551,19 +551,19 @@
       </div>
 
       <div class="form-section">
-        <div class="form-label" id="text-label">What happened today?</div>
+        <label class="form-label" for="log-text" id="text-label">What happened today?</label>
         <textarea class="input-field" id="log-text" rows="4" placeholder="Write what happened…"></textarea>
       </div>
 
       <div class="form-section">
         <div class="form-label" id="mood-label">How was the mood?</div>
-        <div class="chip-scroll" id="mood-chips">${_renderMoodChips(logbook.MOOD_TAGS, null)}</div>
+        <div class="chip-scroll" id="mood-chips" role="group" aria-labelledby="mood-label">${_renderMoodChips(logbook.MOOD_TAGS, null)}</div>
       </div>
 
       <div id="deed-or-prompts">${_renderDeedChips()}</div>
 
       <div class="form-section">
-        <div class="form-label">Date</div>
+        <label class="form-label" for="log-date">Date</label>
         <input class="input-field" id="log-date" type="date"
           value="${new Date().toISOString().split('T')[0]}"
           max="${new Date().toISOString().split('T')[0]}" />
@@ -889,10 +889,12 @@
   function _buildAddCategoryForm() {
     return `
       <div style="background:white;border:0.5px solid var(--color-border);border-radius:var(--radius-md);padding:12px 14px">
-        <div class="form-label" style="padding:0;margin-bottom:8px">Add category</div>
+        <div class="form-label" style="padding:0;margin-bottom:8px" id="add-cat-label">Add category</div>
         <div style="display:flex;gap:8px;margin-bottom:8px">
+          <label class="visually-hidden" for="new-cat-label">Category name</label>
           <input class="input-field" id="new-cat-label" type="text"
-            placeholder="e.g. Read a book" style="flex:1" />
+            placeholder="e.g. Read a book" style="flex:1" aria-describedby="add-cat-label" />
+          <label class="visually-hidden" for="new-cat-pts">Points value</label>
           <input class="input-field" id="new-cat-pts" type="number"
             value="5" min="1" max="100" style="width:64px;text-align:center" aria-label="Points value" />
         </div>
@@ -1128,17 +1130,17 @@
           </button>
         </div>
         <div class="form-section" style="padding-top:14px">
-          <div class="form-label">What happened</div>
+          <label class="form-label" for="edit-entry-text">What happened</label>
           <textarea class="input-field" id="edit-entry-text" rows="4">${_esc(entry.text)}</textarea>
         </div>
         <div class="form-section">
-          <div class="form-label">Mood</div>
-          <div class="chip-scroll" id="edit-mood-chips">
+          <div class="form-label" id="edit-mood-label">Mood</div>
+          <div class="chip-scroll" id="edit-mood-chips" role="group" aria-labelledby="edit-mood-label">
             ${_renderMoodChips(logbook.MOOD_TAGS, entry.moodTag)}
           </div>
         </div>
         <div class="form-section">
-          <div class="form-label">Date</div>
+          <label class="form-label" for="edit-entry-date">Date</label>
           <input class="input-field" id="edit-entry-date" type="date"
             value="${_esc(entry.date)}"
             max="${new Date().toISOString().split('T')[0]}" />
@@ -1199,17 +1201,17 @@
           </button>
         </div>
         <div class="form-section" style="padding-top:14px">
-          <div class="form-label">Your reflection</div>
+          <label class="form-label" for="edit-reflection-text">Your reflection</label>
           <textarea class="input-field" id="edit-reflection-text" rows="4">${_esc(entry.text)}</textarea>
         </div>
         <div class="form-section">
-          <div class="form-label">How were you?</div>
-          <div class="chip-scroll" id="edit-parent-mood-chips">
+          <div class="form-label" id="edit-parent-mood-label">How were you?</div>
+          <div class="chip-scroll" id="edit-parent-mood-chips" role="group" aria-labelledby="edit-parent-mood-label">
             ${_renderMoodChips(reflection.PARENT_MOOD_TAGS, entry.moodTag)}
           </div>
         </div>
         <div class="form-section">
-          <div class="form-label">Date</div>
+          <label class="form-label" for="edit-reflection-date">Date</label>
           <input class="input-field" id="edit-reflection-date" type="date"
             value="${_esc(entry.date)}"
             max="${new Date().toISOString().split('T')[0]}" />
