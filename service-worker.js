@@ -1,7 +1,10 @@
 /* service-worker.js — KidChronicle offline cache */
 
-const CACHE_NAME = 'kidchronicle-v1';
+const CACHE_NAME = 'kidchronicle-v2';
 
+// Only local assets in install-time precache.
+// Third-party CDN resources (fonts, icons) are cached on first network fetch via the
+// fetch handler, avoiding install failures when the CDN is slow or offline.
 const ASSETS = [
   '/',
   '/index.html',
@@ -20,8 +23,6 @@ const ASSETS = [
   '/js/app.js',
   '/assets/data/suggestions.json',
   '/assets/data/reflection-prompts.json',
-  'https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;1,400&family=DM+Sans:wght@400;500&display=swap',
-  'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css',
 ];
 
 self.addEventListener('install', event => {
