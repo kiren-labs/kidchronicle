@@ -1,0 +1,36 @@
+/* themes.css — child avatar colour tokens */
+
+:root {
+  --child-purple-bg:  #EEEDFE;
+  --child-purple-tx:  #3C3489;
+  --child-purple-dot: #7F77DD;
+
+  --child-teal-bg:    #E1F5EE;
+  --child-teal-tx:    #085041;
+  --child-teal-dot:   #1D9E75;
+
+  --child-coral-bg:   #FAECE7;
+  --child-coral-tx:   #712B13;
+  --child-coral-dot:  #D85A30;
+
+  --child-amber-bg:   #FAEEDA;
+  --child-amber-tx:   #633806;
+  --child-amber-dot:  #BA7517;
+
+  --child-blue-bg:    #E6F1FB;
+  --child-blue-tx:    #0C447C;
+  --child-blue-dot:   #378ADD;
+}
+
+.avatar-purple  { background: var(--child-purple-bg); color: var(--child-purple-tx); }
+.avatar-teal    { background: var(--child-teal-bg);   color: var(--child-teal-tx);   }
+.avatar-coral   { background: var(--child-coral-bg);  color: var(--child-coral-tx);  }
+.avatar-amber   { background: var(--child-amber-bg);  color: var(--child-amber-tx);  }
+.avatar-blue    { background: var(--child-blue-bg);   color: var(--child-blue-tx);   }
+
+.dot-purple  { background: var(--child-purple-dot); }
+.dot-teal    { background: var(--child-teal-dot);   }
+.dot-coral   { background: var(--child-coral-dot);  }
+.dot-amber   { background: var(--child-amber-dot);  }
+.dot-blue    { background: var(--child-blue-dot);   }
+

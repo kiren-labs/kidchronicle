@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Your child's story, one day at a time." />
+  <meta name="theme-color" content="#2C2C2A" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="KidChronicle" />
+
+  <title>KidChronicle</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192.png" />
+
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+
+  <link rel="stylesheet" href="/css/reset.css" />
+  <link rel="stylesheet" href="/css/themes.css" />
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Onboarding -->
+  <div id="screen-onboarding" class="screen active" role="main" aria-label="Onboarding">
+    <div id="onboard-content"></div>
+  </div>
+
+  <!-- Home -->
+  <div id="screen-home" class="screen" role="main" aria-label="Home">
+    <div style="padding:16px 16px 8px;display:flex;justify-content:space-between;align-items:flex-start">
+      <span class="display" style="font-size:20px">KidChronicle</span>
+      <span style="font-size:11px;color:var(--color-muted);padding-top:4px" id="home-date"></span>
+    </div>
+    <p class="display-italic" style="padding:0 16px 12px;font-size:15px" id="home-greeting"></p>
+    <p class="section-label">Your children</p>
+    <div style="display:flex;gap:10px;padding:0 16px 16px;overflow-x:auto;scrollbar-width:none"
+         id="child-card-row"></div>
+    <p class="section-label">Recent logs</p>
+    <div id="recent-log-list"></div>
+  </div>
+
+  <!-- Log entry -->
+  <div id="screen-log-entry" class="screen" role="main" aria-label="New log entry">
+    <div class="screen-header">
+      <button class="btn-back" id="log-entry-back" aria-label="Go back">
+        <i class="ti ti-arrow-left" aria-hidden="true"></i>
+      </button>
+      <h1 class="screen-header__title">New log entry</h1>
+    </div>
+    <div id="log-entry-content"></div>
+  </div>
+
+  <!-- Child profile -->
+  <div id="screen-profile" class="screen" role="main" aria-label="Child profile">
+    <div id="profile-content"></div>
+  </div>
+
+  <!-- History -->
+  <div id="screen-history" class="screen" role="main" aria-label="History">
+    <div id="history-content"></div>
+  </div>
+
+  <!-- Add / Edit child form -->
+  <div id="screen-child-form" class="screen" role="main" aria-label="Child profile form">
+    <div class="screen-header">
+      <button class="btn-back" id="child-form-back" aria-label="Go back">
+        <i class="ti ti-arrow-left" aria-hidden="true"></i>
+      </button>
+      <h1 class="screen-header__title" id="child-form-title">Add child</h1>
+    </div>
+    <div id="child-form-content"></div>
+  </div>
+
+  <!-- Bottom navigation -->
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Main navigation">
+    <button class="nav-item" data-screen="home" aria-label="Home">
+      <i class="ti ti-home" aria-hidden="true"></i>
+      <span>Home</span>
+    </button>
+    <button class="nav-item" data-screen="logEntry" aria-label="New log entry">
+      <i class="ti ti-writing" aria-hidden="true"></i>
+      <span>Log</span>
+    </button>
+    <button class="nav-item" data-screen="profile" aria-label="Profile">
+      <i class="ti ti-star" aria-hidden="true"></i>
+      <span>Profile</span>
+    </button>
+    <button class="nav-item" data-screen="history" aria-label="History">
+      <i class="ti ti-clock" aria-hidden="true"></i>
+      <span>History</span>
+    </button>
+  </nav>
+
+  <!-- FAB -->
+  <button class="fab" id="fab" aria-label="Add new log entry">
+    <i class="ti ti-plus" aria-hidden="true"></i>
+  </button>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+</div>
+
+<script src="/js/storage.js"></script>
+<script src="/js/profiles.js"></script>
+<script src="/js/logbook.js"></script>
+<script src="/js/reflection.js"></script>
+<script src="/js/points.js"></script>
+<script src="/js/psychology.js"></script>
+<script src="/js/charts.js"></script>
+<script src="/js/export.js"></script>
+<script src="/js/app.js"></script>
+
+<script>
+  document.getElementById('home-date').textContent =
+    new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+
+  document.getElementById('log-entry-back').addEventListener('click', () => {
+    history.back();
+    setTimeout(() => {
+      if (document.getElementById('screen-log-entry').classList.contains('active')) {
+        document.querySelector('.nav-item[data-screen="home"]').click();
+      }
+    }, 100);
+  });
+</script>
+
+</body>
+</html>
