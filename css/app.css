@@ -9,7 +9,7 @@
   --color-bg:         #FAF9F6;
   --color-surface:    #F1EFE8;
   --color-border:     #E8E6DF;
-  --color-muted:      #888780;
+  --color-muted:      #6B6A63;
   --color-mid:        #D3D1C7;
   --color-body:       #444441;
   --color-accent:     #0F6E56;
@@ -311,7 +311,7 @@ textarea.input-field {
   padding: 12px 14px;
   margin: 0 16px 12px;
 }
-.suggestion-card__label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--color-amber-tx); margin-bottom: 4px; opacity: 0.7; }
+.suggestion-card__label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--color-amber-tx); margin-bottom: 4px; }
 .suggestion-card__title { font-size: 13px; font-weight: 500; color: var(--color-ink); margin-bottom: 3px; }
 .suggestion-card__desc  { font-size: 12px; color: var(--color-amber-tx); line-height: 1.5; }
 
