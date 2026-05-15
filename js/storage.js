@@ -153,6 +153,23 @@ const storage = (() => {
     }
   }
 
+  async function countByIndex(storeName, indexName, value) {
+    try {
+      const db = await openDB();
+      return new Promise((resolve, reject) => {
+        const tx      = db.transaction(storeName, 'readonly');
+        const store   = tx.objectStore(storeName);
+        const index   = store.index(indexName);
+        const request = index.count(value);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror   = () => { _logError('countByIndex:' + storeName, request.error); reject(request.error); };
+      });
+    } catch (err) {
+      _logError('countByIndex:' + storeName, err);
+      throw err;
+    }
+  }
+
   async function update(storeName, data) {
     try {
       const db = await openDB();
@@ -262,6 +279,7 @@ const storage = (() => {
     get,
     getAll,
     getByIndex,
+    countByIndex,
     update,
     remove,
     clearStore,
