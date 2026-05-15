@@ -32,10 +32,14 @@ KidChronicle is a zero-dependency PWA: plain HTML, CSS, and vanilla JS. Everythi
 
 ```
 storage.js → profiles.js → logbook.js → reflection.js →
-points.js → psychology.js → charts.js → export.js → app.js
+points.js → psychology.js → charts.js → export.js →
+ui-utils.js → ui-dialogs.js → app.js
 ```
 
 Modules are loaded as IIFEs via `<script>` tags in `index.html`. There are no ES module `import`/`export` statements. A module may only depend on modules loaded before it. `app.js` depends on all others; nothing depends on `app.js`.
+
+- `ui-utils.js` — exposes `_esc`, `_formatDate`, `showToast` as window globals
+- `ui-dialogs.js` — exposes `showActionSheet`, `showConfirm` as window globals; depends on `ui-utils.js` (`_esc`)
 
 ### Hard architectural invariants
 
