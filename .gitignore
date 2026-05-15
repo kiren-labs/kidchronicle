@@ -1,0 +1,37 @@
+# ── macOS ──────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# ── Editors ────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Claude Code ────────────────────────────────────────────
+.claude/settings.local.json
+
+# ── Local dev server artefacts ─────────────────────────────
+# (python3 -m http.server / npx serve produce no output files,
+#  but guard against common alternatives)
+.cache/
+.parcel-cache/
+dist/
+build/
+
+# ── Environment / secrets ──────────────────────────────────
+# (no build step today, but prevent accidental commits if one
+#  is added in v2)
+.env
+.env.*
+!.env.example
+
+# ── Logs ───────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── OS swap / temp ─────────────────────────────────────────
+*.tmp
+*.bak
