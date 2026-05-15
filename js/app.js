@@ -164,6 +164,7 @@
       profiles.saveFamily({ name: _onboardFamily.name, createdAt: new Date().toISOString() });
       profiles.addChild(_onboardChild);
       profiles.saveSettings({ onboardingComplete: true });
+      if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
 
       const colour = _onboardChild.avatarColor;
       container.innerHTML = `

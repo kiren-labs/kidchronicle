@@ -87,10 +87,20 @@ const logbook = (() => {
    */
   async function getRecentEntries(limit = 3) {
     try {
-      const all = await storage.getAll(storage.STORES.LOG_ENTRIES);
-      return all
-        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        .slice(0, limit);
+      const db = await storage.openDB();
+      return new Promise((resolve, reject) => {
+        const tx      = db.transaction('logEntries', 'readonly');
+        const index   = tx.objectStore('logEntries').index('date');
+        const results = [];
+        const request = index.openCursor(null, 'prev');
+        request.onsuccess = e => {
+          const cursor = e.target.result;
+          if (!cursor || results.length >= limit) { resolve(results); return; }
+          results.push(cursor.value);
+          cursor.continue();
+        };
+        request.onerror = () => reject(request.error);
+      });
     } catch (err) {
       console.error('logbook.getRecentEntries:', err);
       return [];
@@ -120,8 +130,7 @@ const logbook = (() => {
    */
   async function getEntryCount(childId) {
     try {
-      const entries = await storage.getByIndex(storage.STORES.LOG_ENTRIES, 'childId', childId);
-      return entries.length;
+      return await storage.countByIndex(storage.STORES.LOG_ENTRIES, 'childId', childId);
     } catch (err) {
       return 0;
     }
