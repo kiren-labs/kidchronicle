@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g. 1.1.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Bump SW cache version
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          CACHE="kidchronicle-v${VERSION//./-}"
+          sed -i "s/^const CACHE_NAME = .*/const CACHE_NAME = '${CACHE}';/" service-worker.js
+          echo "Cache bumped to: ${CACHE}"
+
+      - name: Commit and tag
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          CACHE="kidchronicle-v${VERSION//./-}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add service-worker.js
+          git commit -m "chore(sw): bump cache to ${CACHE} for v${VERSION}"
+          git tag -a "v${VERSION}" -m "v${VERSION}"
+          git push origin main --tags
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          name: v${{ github.event.inputs.version }}
+          generate_release_notes: true
