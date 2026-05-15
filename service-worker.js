@@ -1,30 +1,30 @@
 /* service-worker.js — KidChronicle offline cache */
 
-const CACHE_NAME = 'kidchronicle-v3';
+const CACHE_NAME = 'kidchronicle-v4';
 
 // Only local assets in install-time precache.
 // Third-party CDN resources (fonts, icons) are cached on first network fetch via the
 // fetch handler, avoiding install failures when the CDN is slow or offline.
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/css/reset.css',
-  '/css/app.css',
-  '/css/themes.css',
-  '/js/storage.js',
-  '/js/profiles.js',
-  '/js/logbook.js',
-  '/js/reflection.js',
-  '/js/points.js',
-  '/js/psychology.js',
-  '/js/charts.js',
-  '/js/export.js',
-  '/js/ui-utils.js',
-  '/js/ui-dialogs.js',
-  '/js/app.js',
-  '/assets/data/suggestions.json',
-  '/assets/data/reflection-prompts.json',
+  './',
+  './index.html',
+  './manifest.json',
+  './css/reset.css',
+  './css/app.css',
+  './css/themes.css',
+  './js/storage.js',
+  './js/profiles.js',
+  './js/logbook.js',
+  './js/reflection.js',
+  './js/points.js',
+  './js/psychology.js',
+  './js/charts.js',
+  './js/export.js',
+  './js/ui-utils.js',
+  './js/ui-dialogs.js',
+  './js/app.js',
+  './assets/data/suggestions.json',
+  './assets/data/reflection-prompts.json',
 ];
 
 self.addEventListener('install', event => {
