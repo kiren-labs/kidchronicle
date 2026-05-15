@@ -1,6 +1,6 @@
 /* service-worker.js — KidChronicle offline cache */
 
-const CACHE_NAME = 'kidchronicle-v2';
+const CACHE_NAME = 'kidchronicle-v3';
 
 // Only local assets in install-time precache.
 // Third-party CDN resources (fonts, icons) are cached on first network fetch via the
