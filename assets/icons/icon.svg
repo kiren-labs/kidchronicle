@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img">
+  <title>KidChronicle</title>
+  <desc>A hand-drawn journal with a leaf and family sketch — KidChronicle app icon</desc>
+
+  <defs>
+    <filter id="sk" x="-4%" y="-4%" width="108%" height="108%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" seed="3" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="skl" x="-4%" y="-4%" width="108%" height="108%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="0.7" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <clipPath id="roundclip">
+      <rect x="0" y="0" width="512" height="512" rx="112" ry="112"/>
+    </clipPath>
+  </defs>
+
+  <!-- App icon background — rounded square -->
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="#2C2C2A"/>
+
+  <!-- ── JOURNAL BODY ───────────────────────────────────────────────────── -->
+  <g clip-path="url(#roundclip)" filter="url(#skl)">
+
+    <!-- Journal cover -->
+    <path d="M80 96 C80 86 88 78 98 78 L322 78 C332 78 340 86 340 96 L342 432 C342 442 334 450 324 450 L98 450 C88 450 80 442 80 432 Z"
+      fill="#1a1a18" stroke="#111110" stroke-width="2"/>
+
+    <!-- Teal spine -->
+    <path d="M80 96 C80 86 88 78 98 78 L134 78 L134 450 L98 450 C88 450 80 442 80 432 Z"
+      fill="#0F6E56" stroke="#085041" stroke-width="1.5"/>
+
+    <!-- Spine binding dots -->
+    <circle cx="107" cy="118" r="5.5" fill="#FAF9F6" opacity="0.72"/>
+    <circle cx="107" cy="150" r="5.5" fill="#FAF9F6" opacity="0.72"/>
+    <circle cx="107" cy="182" r="5.5" fill="#FAF9F6" opacity="0.72"/>
+    <circle cx="107" cy="214" r="5.5" fill="#FAF9F6" opacity="0.72"/>
+    <circle cx="107" cy="246" r="5.5" fill="#FAF9F6" opacity="0.72"/>
+    <circle cx="107" cy="278" r="5.5" fill="#FAF9F6" opacity="0.72"/>
+    <circle cx="107" cy="310" r="5.5" fill="#FAF9F6" opacity="0.72"/>
+    <circle cx="107" cy="342" r="5.5" fill="#FAF9F6" opacity="0.72"/>
+    <circle cx="107" cy="374" r="5.5" fill="#FAF9F6" opacity="0.72"/>
+    <circle cx="107" cy="406" r="5.5" fill="#FAF9F6" opacity="0.72"/>
+
+    <!-- Subtle ruled lines on cover -->
+    <line x1="152" y1="200" x2="322" y2="200" stroke="#FAF9F6" stroke-width="1.5" opacity="0.12"/>
+    <line x1="152" y1="222" x2="322" y2="222" stroke="#FAF9F6" stroke-width="1.5" opacity="0.12"/>
+    <line x1="152" y1="244" x2="322" y2="244" stroke="#FAF9F6" stroke-width="1.5" opacity="0.12"/>
+    <line x1="152" y1="266" x2="290" y2="266" stroke="#FAF9F6" stroke-width="1.5" opacity="0.12"/>
+  </g>
+
+  <!-- ── LEAF growing from top-right ──────────────────────────────────── -->
+  <g filter="url(#sk)">
+    <path d="M328 118 C340 94 374 74 404 64 C432 55 454 64 452 90 C450 114 420 138 386 148 C366 155 332 148 326 130 C322 122 324 118 328 118 Z"
+      fill="#0F6E56" stroke="#085041" stroke-width="2.5"/>
+    <!-- Leaf midrib -->
+    <path d="M328 132 C350 116 378 90 400 68"
+      fill="none" stroke="#FAF9F6" stroke-width="2" stroke-linecap="round" opacity="0.38"/>
+    <!-- Side veins -->
+    <path d="M346 142 C366 126 386 104 396 82"
+      fill="none" stroke="#FAF9F6" stroke-width="1.2" stroke-linecap="round" opacity="0.2"/>
+    <path d="M338 138 C354 122 370 100 378 80"
+      fill="none" stroke="#FAF9F6" stroke-width="1.2" stroke-linecap="round" opacity="0.15"/>
+    <!-- Tendril at base -->
+    <path d="M326 134 C316 146 312 162 322 170 C328 175 336 172 336 164"
+      fill="none" stroke="#0F6E56" stroke-width="3" stroke-linecap="round"/>
+    <!-- Small bud -->
+    <ellipse cx="335" cy="164" rx="7" ry="10"
+      fill="#1D9E75" stroke="#085041" stroke-width="2"/>
+  </g>
+
+  <!-- ── HAND-DRAWN FAMILY on journal cover ───────────────────────────── -->
+  <g filter="url(#sk)" opacity="0.93">
+
+    <!-- PARENT — centre figure -->
+    <circle cx="237" cy="188" r="24" fill="#FAF9F6" opacity="0.92"/>
+    <!-- Parent hair -->
+    <path d="M214 184 C214 170 224 162 237 162 C250 162 260 170 260 184"
+      fill="none" stroke="#FAF9F6" stroke-width="3.5" stroke-linecap="round" opacity="0.55"/>
+    <!-- Parent body -->
+    <path d="M237 212 C222 210 210 222 208 238 C206 252 210 264 216 268 C222 272 252 272 258 268 C264 264 268 252 266 238 C264 222 252 210 237 212 Z"
+      fill="#FAF9F6" opacity="0.88"/>
+    <!-- Parent arms wide -->
+    <path d="M210 234 C198 228 182 232 170 242"
+      fill="none" stroke="#FAF9F6" stroke-width="5" stroke-linecap="round" opacity="0.82"/>
+    <path d="M264 234 C276 228 292 232 304 242"
+      fill="none" stroke="#FAF9F6" stroke-width="5" stroke-linecap="round" opacity="0.82"/>
+
+    <!-- CHILD LEFT — purple -->
+    <circle cx="166" cy="254" r="17" fill="#7F77DD" opacity="0.9"/>
+    <path d="M166 270 C152 268 144 278 143 290 C142 300 145 308 150 311 C155 314 177 314 182 311 C187 308 190 300 189 290 C188 278 180 268 166 270 Z"
+      fill="#7F77DD" opacity="0.85"/>
+    <!-- Child L arms up joyful -->
+    <path d="M144 288 C137 278 132 266 130 256"
+      fill="none" stroke="#7F77DD" stroke-width="4.5" stroke-linecap="round" opacity="0.8"/>
+    <path d="M188 288 C193 280 196 270 196 260"
+      fill="none" stroke="#7F77DD" stroke-width="4.5" stroke-linecap="round" opacity="0.8"/>
+
+    <!-- CHILD RIGHT — coral -->
+    <circle cx="308" cy="254" r="17" fill="#D85A30" opacity="0.9"/>
+    <path d="M308 270 C294 268 286 278 285 290 C284 300 287 308 292 311 C297 314 319 314 324 311 C329 308 332 300 331 290 C330 278 322 268 308 270 Z"
+      fill="#D85A30" opacity="0.85"/>
+    <!-- Child R arms up -->
+    <path d="M286 288 C280 278 277 268 277 258"
+      fill="none" stroke="#D85A30" stroke-width="4.5" stroke-linecap="round" opacity="0.8"/>
+    <path d="M330 288 C336 278 340 266 342 256"
+      fill="none" stroke="#D85A30" stroke-width="4.5" stroke-linecap="round" opacity="0.8"/>
+
+    <!-- TODDLER — amber, peeking below parent -->
+    <circle cx="237" cy="318" r="13" fill="#BA7517" opacity="0.88"/>
+    <path d="M225 330 C222 338 222 348 224 354"
+      fill="none" stroke="#BA7517" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+    <path d="M249 330 C252 338 252 348 250 354"
+      fill="none" stroke="#BA7517" stroke-width="4" stroke-linecap="round" opacity="0.75"/>
+
+    <!-- Sparkles / celebration stars -->
+    <path d="M310 108 L314 100 L318 108 L326 108 L320 114 L322 122 L314 118 L306 122 L308 114 L302 108 Z"
+      fill="#FAF9F6" opacity="0.72"/>
+    <path d="M170 102 L173 96 L176 102 L182 102 L177 107 L179 113 L173 110 L167 113 L169 107 L164 102 Z"
+      fill="#FAF9F6" opacity="0.5"/>
+
+    <!-- Ground baseline -->
+    <path d="M152 362 C176 360 200 362 237 362 C274 362 298 360 322 362"
+      fill="none" stroke="#FAF9F6" stroke-width="1.5" stroke-linecap="round" opacity="0.22"/>
+  </g>
+
+  <!-- ── CHILD COLOUR DOTS at base ────────────────────────────────────── -->
+  <g filter="url(#skl)">
+    <circle cx="161" cy="408" r="13" fill="#7F77DD"/>
+    <circle cx="197" cy="413" r="13" fill="#1D9E75"/>
+    <circle cx="233" cy="408" r="13" fill="#D85A30"/>
+    <circle cx="269" cy="413" r="13" fill="#BA7517"/>
+    <circle cx="305" cy="408" r="13" fill="#378ADD"/>
+    <!-- Pencil stroke under dots -->
+    <path d="M148 424 C172 427 200 424 234 427 C260 429 284 426 318 424"
+      fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" opacity="0.25"/>
+  </g>
+
+</svg>
