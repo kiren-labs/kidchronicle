@@ -1,6 +1,6 @@
 /* service-worker.js — KidChronicle offline cache */
 
-const CACHE_NAME = 'kidchronicle-v4';
+const CACHE_NAME = 'kidchronicle-v5';
 
 // Only local assets in install-time precache.
 // Third-party CDN resources (fonts, icons) are cached on first network fetch via the
@@ -9,6 +9,8 @@ const ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './assets/tabler-icons/tabler-icons.min.css',
+  './assets/tabler-icons/fonts/tabler-icons.woff2',
   './css/reset.css',
   './css/app.css',
   './css/themes.css',
