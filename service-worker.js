@@ -20,6 +20,8 @@ const ASSETS = [
   '/js/psychology.js',
   '/js/charts.js',
   '/js/export.js',
+  '/js/ui-utils.js',
+  '/js/ui-dialogs.js',
   '/js/app.js',
   '/assets/data/suggestions.json',
   '/assets/data/reflection-prompts.json',
