@@ -521,7 +521,7 @@
         <!-- Mood chart -->
         <div style="background:white;border:0.5px solid var(--color-border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:14px">
           <div class="form-label" style="padding:0;margin-bottom:8px">Mood — last 30 days</div>
-          <canvas id="mood-chart" style="width:100%;height:64px" aria-label="Mood breakdown for ${_esc(child.name)}"></canvas>
+          <canvas id="mood-chart" style="width:100%;height:80px" aria-label="Mood breakdown for ${_esc(child.name)}"></canvas>
         </div>
 
         ${badges.length > 0 ? `
@@ -1073,7 +1073,7 @@
       const emptyHtml = _historyFilter.mode === 'reflection' ? `
         <div style="background:white;border:0.5px solid var(--color-border);border-radius:var(--radius-sm);padding:10px 12px;margin:0 16px 14px">
           <div class="form-label" style="padding:0;margin-bottom:8px">My mood — last 30 days</div>
-          <canvas id="parent-mood-chart" style="width:100%;height:64px" aria-label="Parent mood breakdown last 30 days"></canvas>
+          <canvas id="parent-mood-chart" style="width:100%;height:80px" aria-label="Parent mood breakdown last 30 days"></canvas>
         </div>
         <div class="empty-state">
           <div class="empty-state__icon"><i class="ti ti-book-off" aria-hidden="true"></i></div>
@@ -1098,7 +1098,7 @@
     const parentMoodChartHtml = _historyFilter.mode === 'reflection' ? `
       <div style="background:white;border:0.5px solid var(--color-border);border-radius:var(--radius-sm);padding:10px 12px;margin:0 16px 14px">
         <div class="form-label" style="padding:0;margin-bottom:8px">My mood — last 30 days</div>
-        <canvas id="parent-mood-chart" style="width:100%;height:64px" aria-label="Parent mood breakdown last 30 days"></canvas>
+        <canvas id="parent-mood-chart" style="width:100%;height:80px" aria-label="Parent mood breakdown last 30 days"></canvas>
       </div>` : '';
 
     listEl.innerHTML = parentMoodChartHtml + items.slice(0, 50).map(item =>

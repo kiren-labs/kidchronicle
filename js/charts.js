@@ -161,7 +161,7 @@ const charts = (() => {
     }
 
     const PADDING_TOP    = 8;
-    const PADDING_BOTTOM = 20;
+    const PADDING_BOTTOM = 22;
     const PADDING_SIDE   = 4;
     const chartH = H - PADDING_TOP - PADDING_BOTTOM;
     const chartW = W - PADDING_SIDE * 2;
@@ -192,13 +192,11 @@ const charts = (() => {
 
       // Label
       ctx.fillStyle    = COLOURS.label;
-      ctx.font         = `${Math.max(9, Math.floor(barW * 0.55))}px -apple-system, sans-serif`;
+      ctx.font         = `9px -apple-system, sans-serif`;
       ctx.textAlign    = 'center';
       ctx.textBaseline = 'top';
       const labelY     = H - PADDING_BOTTOM + 4;
-      // Shorten label for space
-      const shortLabel = d.label.length > 4 ? d.label.slice(0, 4) : d.label;
-      ctx.fillText(shortLabel, x + barW / 2, labelY);
+      ctx.fillText(d.label, x + barW / 2, labelY);
     });
   }
 
