@@ -518,6 +518,12 @@
           <canvas id="points-chart" style="width:100%;height:64px" aria-label="Points chart for ${_esc(child.name)}"></canvas>
         </div>
 
+        <!-- Mood chart -->
+        <div style="background:white;border:0.5px solid var(--color-border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:14px">
+          <div class="form-label" style="padding:0;margin-bottom:8px">Mood — last 30 days</div>
+          <canvas id="mood-chart" style="width:100%;height:64px" aria-label="Mood breakdown for ${_esc(child.name)}"></canvas>
+        </div>
+
         ${badges.length > 0 ? `
         <div style="margin-bottom:14px">
           <div class="section-label" style="padding:0;margin-bottom:8px">Badges earned</div>
@@ -556,8 +562,11 @@
     );
 
     requestAnimationFrame(() => {
-      const canvas = document.getElementById('points-chart');
-      if (canvas) charts.renderPointsChart(childId, canvas);
+      const pointsCanvas = document.getElementById('points-chart');
+      if (pointsCanvas) charts.renderPointsChart(childId, pointsCanvas);
+
+      const moodCanvas = document.getElementById('mood-chart');
+      if (moodCanvas) charts.renderMoodChart(childId, moodCanvas);
     });
   }
 
@@ -1061,20 +1070,49 @@
     }
 
     if (items.length === 0) {
-      listEl.innerHTML = `
+      const emptyHtml = _historyFilter.mode === 'reflection' ? `
+        <div style="background:white;border:0.5px solid var(--color-border);border-radius:var(--radius-sm);padding:10px 12px;margin:0 16px 14px">
+          <div class="form-label" style="padding:0;margin-bottom:8px">My mood — last 30 days</div>
+          <canvas id="parent-mood-chart" style="width:100%;height:64px" aria-label="Parent mood breakdown last 30 days"></canvas>
+        </div>
+        <div class="empty-state">
+          <div class="empty-state__icon"><i class="ti ti-book-off" aria-hidden="true"></i></div>
+          <p class="empty-state__title">No reflections yet</p>
+          <p class="empty-state__desc">Tap + and switch to "About myself" to start.</p>
+        </div>` : `
         <div class="empty-state">
           <div class="empty-state__icon"><i class="ti ti-calendar-off" aria-hidden="true"></i></div>
           <p class="empty-state__title">No entries found</p>
           <p class="empty-state__desc">Try a different filter.</p>
         </div>`;
+      listEl.innerHTML = emptyHtml;
+      if (_historyFilter.mode === 'reflection') {
+        requestAnimationFrame(() => {
+          const c = document.getElementById('parent-mood-chart');
+          if (c) charts.renderParentMoodChart(c);
+        });
+      }
       return;
     }
 
-    listEl.innerHTML = items.slice(0, 50).map(item =>
+    const parentMoodChartHtml = _historyFilter.mode === 'reflection' ? `
+      <div style="background:white;border:0.5px solid var(--color-border);border-radius:var(--radius-sm);padding:10px 12px;margin:0 16px 14px">
+        <div class="form-label" style="padding:0;margin-bottom:8px">My mood — last 30 days</div>
+        <canvas id="parent-mood-chart" style="width:100%;height:64px" aria-label="Parent mood breakdown last 30 days"></canvas>
+      </div>` : '';
+
+    listEl.innerHTML = parentMoodChartHtml + items.slice(0, 50).map(item =>
       item._type === 'reflection'
         ? _buildReflectionCard(item, { editable: true })
         : _buildEntryCard(item, item._child, { editable: true })
     ).join('');
+
+    if (_historyFilter.mode === 'reflection') {
+      requestAnimationFrame(() => {
+        const c = document.getElementById('parent-mood-chart');
+        if (c) charts.renderParentMoodChart(c);
+      });
+    }
 
     // ── Action button wiring ───────────────────────────────────────────────
     listEl.addEventListener('click', e => {
