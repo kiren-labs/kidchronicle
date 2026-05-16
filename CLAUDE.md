@@ -54,7 +54,18 @@ Modules are loaded as IIFEs via `<script>` tags in `index.html`. There are no ES
 
 ### Service worker
 
-Cache-first strategy. The full asset list is in `service-worker.js`. When you add a new file, add it to the `ASSETS` array. When shipping a new version, increment `CACHE_NAME` (e.g. `kidchronicle-v2`) — the `activate` handler deletes old caches automatically.
+Cache-first strategy. The full asset list is in `service-worker.js`. When you add a new file, add it to the `ASSETS` array. When shipping a new version, increment `CACHE_NAME` — the `activate` handler deletes old caches automatically.
+
+Update flow (do not break this):
+1. New SW installs but does **not** skip waiting automatically.
+2. `app.js` detects `updatefound` → `statechange === 'installed'` → calls `_showUpdateBanner()`.
+3. User clicks "Update now" in the banner → `app.js` sends `postMessage({ type: 'SKIP_WAITING' })` to the waiting SW.
+4. SW calls `self.skipWaiting()` → browser fires `controllerchange` → `app.js` reloads the page.
+5. `setInterval` in `app.js` polls `reg.update()` every 60 seconds so updates are caught without a full reload.
+
+### PWA install prompt
+
+`app.js` captures `beforeinstallprompt`, suppresses the automatic browser banner, and stashes the event in `_installPromptEvent`. When that variable is non-null, `renderSettings()` shows an "Add to home screen" row. Clicking it calls `_installPromptEvent.prompt()`. The Chrome DevTools message _"beforeinstallprompt event.preventDefault() called"_ is expected and informational — not an error.
 
 ### CSS tokens
 
@@ -72,6 +83,17 @@ const id = `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 **DOM updates** — build a full HTML string and set `innerHTML` once; don't `appendChild` in a loop (causes reflow per iteration). User-supplied text must go through `_esc()` (defined in `app.js`) before insertion into `innerHTML`.
 
 **Named constants over magic numbers** — `MAX_CHILDREN`, `HISTORY_PAGE_SIZE`, `SUGGESTION_COUNT`, etc.
+
+## Version update protocol
+
+Every release requires updating **two places**:
+
+```
+service-worker.js  →  CACHE_NAME = 'kidchronicle-vN'   (current: v8)
+js/app.js          →  version string in renderSettings() (search "v1.0.0")
+```
+
+Also update `CHANGELOG.md`.
 
 ## Commit and branch conventions
 
