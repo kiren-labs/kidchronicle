@@ -913,6 +913,33 @@
       document.getElementById('category-list').innerHTML = _buildCategoryRows(updated);
     });
 
+    // ── Check for updates ──
+    document.getElementById('settings-update-row').addEventListener('click', () => {
+      if (_swRegistration) {
+        _swRegistration.update().then(() => {
+          if (_swRegistration.waiting) {
+            _showUpdateBanner();
+          } else {
+            showToast('You\'re on the latest version.', 'success', 3000);
+          }
+        }).catch(() => showToast('Update check failed.', 'error', 3000));
+      } else {
+        showToast('Service worker not available.', 'error', 3000);
+      }
+    });
+
+    // ── Install to home screen ──
+    if (_installPromptEvent) {
+      document.getElementById('settings-install-row').addEventListener('click', async () => {
+        _installPromptEvent.prompt();
+        const { outcome } = await _installPromptEvent.userChoice;
+        if (outcome === 'accepted') {
+          _installPromptEvent = null;
+          renderSettings();
+        }
+      });
+    }
+
     // ── Reset all data ──
     document.getElementById('settings-reset-row').addEventListener('click', () => {
       showConfirm(
