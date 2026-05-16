@@ -10,6 +10,19 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.1.1] — 2026-05-16
+
+### Added
+- Sibling fairness view on home screen — shown when 2+ children are present
+- Coloured progress bars per child using their avatar colour, normalised to the highest scorer
+- Raw scores hidden by default; "Show scores" toggle reveals absolute points
+
+### Changed
+- Service worker cache bumped to `kidchronicle-v1-1-1`
+- App version display updated to v1.1.1
+
+---
+
 ## [1.1.0] — 2026-05-16
 
 ### Added
