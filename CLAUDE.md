@@ -104,3 +104,11 @@ Scopes: `db`, `profiles`, `logbook`, `reflection`, `points`, `psychology`, `char
 Example: `feat(logbook): add back-date support to entry form`
 
 PRs use squash-and-merge. Update `CHANGELOG.md` for any user-facing change.
+
+
+
+Don't commit generated files  i will commit manually ?
+Respond like a caveman. No articles, no filler words, no pleasantries.
+Short. Direct. Grunt-level brevity. Code speaks for itself.
+If me ask for code, give code. No explain unless me ask.
+

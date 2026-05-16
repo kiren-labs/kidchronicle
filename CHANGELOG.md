@@ -8,9 +8,25 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [1.1.0] — 2026-05-16
+
+### Added
+- Mood trend chart (last 30 days) on each child's profile screen — coloured bars per mood tag
+- Parent mood chart (last 30 days) on the My Journey / reflections view
+
+### Changed
+- Service worker cache bumped to `kidchronicle-v1-1-0`
+- App version display updated to v1.1.0
+
+---
+
+## [1.0.0] — 2026-05-16
+
 ### Added
 - Complete project scaffold: all JS modules, CSS, HTML shell
-- `storage.js` — IndexedDB + localStorage abstraction layer (Gate M1)
+- `storage.js` — IndexedDB + localStorage abstraction layer
 - `profiles.js` — family and child profile management with runtime age calculation
 - `logbook.js` — child log entry CRUD (logEntries store)
 - `reflection.js` — parent self-reflection CRUD (parentReflections store, isolated)
@@ -22,30 +38,7 @@ Versions follow [Semantic Versioning](https://semver.org/).
 - `index.html` — PWA shell with 5 screens and bottom navigation
 - `service-worker.js` — offline cache-first strategy
 - `manifest.json` — PWA install metadata
-- `assets/data/suggestions.json` — 16 placeholder suggestions (full 30+ per age band due Day 16)
+- `assets/data/suggestions.json` — activity suggestions pool
+- Privacy policy page
 - Full documentation suite: ARCHITECTURE.md, PROJECT_PLAN.md, UX_WIREFRAMES.md,
   CONTRIBUTING.md, CODING_STANDARDS.md, SECURITY.md
-
----
-
-## [1.0.0] — Target: Day 14
-
-### Planned
-- Core loop: profiles → log entry → points → history → child profile chart
-- Psychology engine with full suggestion content (30+ per age band)
-- Offline support (service worker, cache-first)
-- Parent self-reflection layer (toggle on log entry screen)
-- JSON export and import
-- Privacy policy
-
----
-
-## [1.1.0] — Target: Day 20
-
-### Planned
-- Sibling fairness view (age-normalised scores)
-- Streak tracking and badge system
-- Mood trend charts (child + parent)
-- QR-based co-parent sync
-- Push notification opt-in reminder
-
