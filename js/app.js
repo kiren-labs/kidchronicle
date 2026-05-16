@@ -434,6 +434,14 @@
       addCard.addEventListener('click', () => showScreen('childForm'));
     }
 
+    // Sibling fairness view (only when > 1 child)
+    const fairnessEl = document.getElementById('sibling-fairness');
+    if (children.length > 1 && fairnessEl) {
+      await _renderSiblingFairness(children, fairnessEl);
+    } else if (fairnessEl) {
+      fairnessEl.innerHTML = '';
+    }
+
     // Recent logs
     const logList = document.getElementById('recent-log-list');
     const recent  = await logbook.getRecentEntries(3);
@@ -449,6 +457,51 @@
         return _buildEntryCard(entry, child);
       }).join('');
     }
+  }
+
+  // ── Sibling fairness view ─────────────────────────────────────────────────
+
+  let _siblingShowRaw = false;
+
+  async function _renderSiblingFairness(children, containerEl) {
+    const totals = await Promise.all(children.map(c => points.getTotalPoints(c.id)));
+    const max    = Math.max(...totals, 1);
+
+    const rows = children.map((child, i) => {
+      const pct   = Math.round((totals[i] / max) * 100);
+      const label = _esc(child.nickname || child.name);
+      return `
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+            <span style="font-size:13px;font-weight:500">${label}</span>
+            <span style="font-size:12px;color:var(--color-muted)" data-raw="${totals[i]}">
+              ${_siblingShowRaw ? `${totals[i]} pts` : `${pct}%`}
+            </span>
+          </div>
+          <div style="background:var(--color-surface);border-radius:var(--radius-full);height:8px;overflow:hidden">
+            <div class="avatar-${child.avatarColor}"
+                 style="height:100%;width:${pct}%;border-radius:var(--radius-full);transition:width 0.4s ease;min-width:${pct > 0 ? 4 : 0}px"></div>
+          </div>
+        </div>`;
+    }).join('');
+
+    containerEl.innerHTML = `
+      <div style="padding:0 16px 4px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span class="section-label" style="padding:0">Family progress</span>
+          <button id="sibling-toggle-raw"
+                  style="font-size:11px;color:var(--color-muted);background:none;border:none;padding:0;cursor:pointer"
+                  aria-label="${_siblingShowRaw ? 'Hide raw scores' : 'Show raw scores'}">
+            ${_siblingShowRaw ? 'Hide scores' : 'Show scores'}
+          </button>
+        </div>
+        ${rows}
+      </div>`;
+
+    containerEl.querySelector('#sibling-toggle-raw').addEventListener('click', () => {
+      _siblingShowRaw = !_siblingShowRaw;
+      _renderSiblingFairness(children, containerEl);
+    });
   }
 
   // ── Child profile screen ───────────────────────────────────────────────────
@@ -819,7 +872,7 @@
         <div class="settings-group__label">About</div>
         <div class="settings-row">
           <div class="settings-row__label">Version</div>
-          <div class="settings-row__right">v1.1.0</div>
+          <div class="settings-row__right">v1.1.1</div>
         </div>
         <div class="settings-row" id="settings-update-row" role="button" tabindex="0"
              aria-label="Check for updates">
