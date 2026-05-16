@@ -13,16 +13,58 @@
 
 (async () => {
 
+  // ── PWA install prompt ────────────────────────────────────────────────────
+
+  let _installPromptEvent = null;
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    _installPromptEvent = e;
+    // If settings is open, re-render to show the install row
+    if (_currentScreen === 'settings') renderSettings();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    _installPromptEvent = null;
+    if (_currentScreen === 'settings') renderSettings();
+  });
+
   // ── Service worker registration ────────────────────────────────────────────
 
+  let _swRegistration = null;
+  let _refreshing     = false;
+
+  function _reloadApp() {
+    if (_swRegistration && _swRegistration.waiting) {
+      _swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    } else {
+      window.location.reload();
+    }
+  }
+
+  function _showUpdateBanner() {
+    const banner = document.getElementById('update-banner');
+    if (banner) banner.classList.add('visible');
+  }
+
   if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (_refreshing) return;
+      _refreshing = true;
+      window.location.reload();
+    });
+
     navigator.serviceWorker.register('./service-worker.js')
       .then(reg => {
+        _swRegistration = reg;
+
+        setInterval(() => reg.update(), 60000);
+
         reg.addEventListener('updatefound', () => {
           const newWorker = reg.installing;
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              showToast('Update available — reload to get the latest version.', 'success', 5000);
+              _showUpdateBanner();
             }
           });
         });
@@ -768,12 +810,30 @@
         <div class="settings-group__label">About</div>
         <div class="settings-row">
           <div class="settings-row__label">Version</div>
-          <div class="settings-row__right">v0.1.0</div>
+          <div class="settings-row__right">v1.0.0</div>
         </div>
+        <div class="settings-row" id="settings-update-row" role="button" tabindex="0"
+             aria-label="Check for updates">
+          <div class="settings-row__label">Check for updates</div>
+          <div class="settings-row__right"><i class="ti ti-refresh" aria-hidden="true"></i></div>
+        </div>
+        ${_installPromptEvent ? `
+        <div class="settings-row" id="settings-install-row" role="button" tabindex="0"
+             aria-label="Add KidChronicle to home screen">
+          <div>
+            <div class="settings-row__label">Add to home screen</div>
+            <div class="settings-row__meta">Install app for offline use</div>
+          </div>
+          <div class="settings-row__right"><i class="ti ti-device-mobile" aria-hidden="true"></i></div>
+        </div>` : ''}
         <div class="settings-row">
           <div class="settings-row__label">Data storage</div>
           <div class="settings-row__right" style="font-size:11px">On this device only</div>
         </div>
+        <a href="privacy.html" class="settings-row" style="text-decoration:none" target="_blank" rel="noopener">
+          <div class="settings-row__label">Privacy policy</div>
+          <div class="settings-row__right"><i class="ti ti-external-link" aria-hidden="true"></i></div>
+        </a>
       </div>
 
       <!-- ── Danger zone ── -->
@@ -852,6 +912,33 @@
       ptsEl.value   = '5';
       document.getElementById('category-list').innerHTML = _buildCategoryRows(updated);
     });
+
+    // ── Check for updates ──
+    document.getElementById('settings-update-row').addEventListener('click', () => {
+      if (_swRegistration) {
+        _swRegistration.update().then(() => {
+          if (_swRegistration.waiting) {
+            _showUpdateBanner();
+          } else {
+            showToast('You\'re on the latest version.', 'success', 3000);
+          }
+        }).catch(() => showToast('Update check failed.', 'error', 3000));
+      } else {
+        showToast('Service worker not available.', 'error', 3000);
+      }
+    });
+
+    // ── Install to home screen ──
+    if (_installPromptEvent) {
+      document.getElementById('settings-install-row').addEventListener('click', async () => {
+        _installPromptEvent.prompt();
+        const { outcome } = await _installPromptEvent.userChoice;
+        if (outcome === 'accepted') {
+          _installPromptEvent = null;
+          renderSettings();
+        }
+      });
+    }
 
     // ── Reset all data ──
     document.getElementById('settings-reset-row').addEventListener('click', () => {
@@ -1278,6 +1365,13 @@
         </div>
       </div>`;
   }
+
+  // ── Update banner wiring ──────────────────────────────────────────────────
+
+  document.getElementById('update-banner-btn').addEventListener('click', () => _reloadApp());
+  document.getElementById('update-banner-dismiss').addEventListener('click', () => {
+    document.getElementById('update-banner').classList.remove('visible');
+  });
 
   // ── Navigation wiring ──────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 /* service-worker.js — KidChronicle offline cache */
 
-const CACHE_NAME = 'kidchronicle-v6';
+const CACHE_NAME = 'kidchronicle-v8';
 
 // Only local assets in install-time precache.
 // Third-party CDN resources (fonts, icons) are cached on first network fetch via the
@@ -9,6 +9,11 @@ const ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './privacy.html',
+  './assets/icons/icon-192.png',
+  './assets/icons/icon-512.png',
+  './assets/icons/apple-touch-icon.png',
+  './assets/icons/favicon-32.png',
   './assets/tabler-icons/tabler-icons.min.css',
   './assets/tabler-icons/fonts/tabler-icons.woff2',
   './css/reset.css',
@@ -33,8 +38,13 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(ASSETS))
-      .then(() => self.skipWaiting())
   );
+});
+
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('activate', event => {
