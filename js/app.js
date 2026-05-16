@@ -768,12 +768,16 @@
         <div class="settings-group__label">About</div>
         <div class="settings-row">
           <div class="settings-row__label">Version</div>
-          <div class="settings-row__right">v0.1.0</div>
+          <div class="settings-row__right">v1.0.0</div>
         </div>
         <div class="settings-row">
           <div class="settings-row__label">Data storage</div>
           <div class="settings-row__right" style="font-size:11px">On this device only</div>
         </div>
+        <a href="privacy.html" class="settings-row" style="text-decoration:none" target="_blank" rel="noopener">
+          <div class="settings-row__label">Privacy policy</div>
+          <div class="settings-row__right"><i class="ti ti-external-link" aria-hidden="true"></i></div>
+        </a>
       </div>
 
       <!-- ── Danger zone ── -->
