@@ -819,7 +819,7 @@
         <div class="settings-group__label">About</div>
         <div class="settings-row">
           <div class="settings-row__label">Version</div>
-          <div class="settings-row__right">v1.0.0</div>
+          <div class="settings-row__right">v1.1.0</div>
         </div>
         <div class="settings-row" id="settings-update-row" role="button" tabindex="0"
              aria-label="Check for updates">
